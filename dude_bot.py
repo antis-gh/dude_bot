@@ -40,10 +40,10 @@ def open_coub(message):
 # Send a random Frog pic
 def sendFrog(chatId):
     if(isWednesday() == True):
-        bot.send_photo(chatId, photo=open(getRangomPic(".\\dudes"), "rb"))
+        bot.send_photo(chatId, photo=open(getRangomPic("./dudes"), "rb"))
     else:
         bot.send_message(chatId, "It's NOT Wednesday, dude! Stop it!")
-        bot.send_photo(chatId, photo=open(getRangomPic(".\\not"), "rb"))
+        bot.send_photo(chatId, photo=open(getRangomPic("./not"), "rb"))
 
 # Check if it's Wednesday today
 # Output: True/False
@@ -65,7 +65,7 @@ def getRangomPic(path):
     files = os.listdir(path)
     d = random.choice(files)
 
-    return path+"\\"+d
+    return path+"/"+d
 
 # Ping every 10 min to keep API connection alive
 def connectionPing(msg):
