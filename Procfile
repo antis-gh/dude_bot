@@ -1,0 +1,1 @@
+worker: python dude_bot.py
