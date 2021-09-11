@@ -1,4 +1,3 @@
-# today failed
 import telebot
 from telebot import types
 import datetime
@@ -21,8 +20,8 @@ tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime="19:52"
-frogMessageTime="19:53"
+bdMessageTime="08:10"
+frogMessageTime="09:00"
 
 # Set a system env vars for userlist and birthday list
 # NAMES var value should be array format
@@ -39,7 +38,7 @@ BOT_TIMEOUT = 30
 def botactions(bot):
     # Main func to start the bot, read "/dude" key
     # Runs schedule for automatic Wednesday Frog pic sendout: scheduleWednesdayFrog
-    # Runs schedule for automatic Brithday message Frog pic sendout: scheduleWednesdayFrog
+    # Runs schedule for automatic Brithday message Frog pic sendout: scheduleBirthdayMessage
     # Runs schedule for keening connection alive: connectionPing
     @bot.message_handler(commands=["dude"])
     def starter(message):
@@ -55,7 +54,7 @@ def botactions(bot):
         chatId = message.chat.id
         sendFrog(chatId)
 
-    # Read "/dude_help"
+    # Read "/dude_help" key
     @bot.message_handler(commands=["dude_help"])
     def open_coub(message):
         chatId = message.chat.id
@@ -106,7 +105,7 @@ def isWednesday():
 # Timezones are not supported! Uses server time! (UTC)
 def scheduleWednesdayFrog(chatId):
     #schedule.every().wednesday.at(frogMessageTime).do(sendFrog, chatId)
-    schedule.every().saturday.at(frogMessageTime).do(sendFrog, chatId)
+    schedule.every().sunday.at(frogMessageTime).do(sendFrog, chatId)
 
 # Choose a random pic from dir
 # Input: path to dir
@@ -161,8 +160,8 @@ def formatName(str):
 def setSchedules(chatId, message):
     chatTitle = bot.get_chat(chatId).title
     scheduleWednesdayFrog(chatId)
-    connectionPing(message)
     scheduleBirthdayMessage(chatId)
+    connectionPing(message)
     print(tlnCurrentTime.now(), "Schedule is set for", chatTitle, chatId)
     while True:
         schedule.run_pending()
