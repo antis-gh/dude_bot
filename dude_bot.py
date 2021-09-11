@@ -19,7 +19,7 @@ serverDate = datetime.now()
 tlnTZ = timezone('Europe/Tallinn')
 tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
-# Set a system env vars for userlist ant birthday list
+# Set a system env vars for userlist and birthday list
 # NAMES var value should be array format
 # Example: ["Name1", "Name2", "Name3", "Name4"]
 NAMES = os.environ["NAMES"]
@@ -38,11 +38,10 @@ def botactions(bot):
     @bot.message_handler(commands=["dude"])
     def starter(message):
         chatId = message.chat.id
-        print(chatId)
+        print(tlnCurrentTime.now(),chatId)
         bot.send_message(chatId, "Dude!")
         scheduleWednesdayFrog(chatId)
         connectionPing(message)
-        sendBirthdayMessage(chatId)
         scheduleBirthdayMessage(chatId)
         while True:
             schedule.run_pending()
@@ -80,9 +79,9 @@ def botactions(bot):
     def bdList(message):
         chatId = message.chat.id
         list="Our birthdays:\n"
-        for i in range(len(TBDAYS)):
-            formatedName=formatName(TNAMES[i])
-            date=datetime.strptime(TBDAYS[i], "%m-%d")
+        for i in range(len(BDAYS)):
+            formatedName=formatName(NAMES[i])
+            date=datetime.strptime(BDAYS[i], "%m-%d")
             formatDate=date.strftime("%b-%d")
             list += formatDate + " - " + formatedName+"\n"
         bot.send_message(chatId, list)
@@ -99,7 +98,7 @@ def sendFrog(chatId):
 # Output: True/False
 def isWednesday():
     day = tlnCurrentTime.isoweekday()
-    print (day)
+    print (tlnCurrentTime.now(), "weekday:", day)
 
     if (day==3):
         return True
@@ -125,8 +124,7 @@ def connectionPing(msg):
 # Pointless function for Ping bot
 def setChatId(message):
     chatId = message.chat.id
-    dt = datetime.now()
-    print(dt," Ping (chatId Updated)")
+    print(tlnCurrentTime.now()," Ping (chatId Updated)")
 
 # Check if today is any user's from the list birthday
 # If yes returnes user's name from NAMES list
@@ -134,11 +132,11 @@ def setChatId(message):
 def isBirthday():
     today = tlnCurrentTime.date()
     todayNoYear = today.strftime('%m-%d')
-    for i in range(len(TBDAYS)):
-        print(TBDAYS[i])
-        if(str(todayNoYear) == TBDAYS[i]):
-            print ("It's bday of ", TNAMES[i])
-            name = TNAMES[i]
+    for i in range(len(BDAYS)):
+        print(BDAYS[i])
+        if(str(todayNoYear) == BDAYS[i]):
+            print (tlnCurrentTime.now(), "It's bday of ", NAMES[i])
+            name = NAMES[i]
             return name
     return False
 
@@ -146,10 +144,10 @@ def isBirthday():
 def sendBirthdayMessage(chatId):
     if (isBirthday() != False):
         bot.send_message(chatId, "Сегодня день рождения " + isBirthday() + "!\nПоздравляю, кожаный человек!")
-        bot.send_photo(chatId, photo=open(".\\dudes\\bday\\bday.jpg", "rb"))
+        bot.send_photo(chatId, photo=open("./dudes/bday/bday.jpg", "rb"))
 
 def scheduleBirthdayMessage(chatId):
-    schedule.every().day.at("10:10").do(sendBirthdayMessage, chatId)
+    schedule.every().day.at("20:10").do(sendBirthdayMessage, chatId)
 
 #Remove @ from usernames to not ping person in chat
 def formatName(str):
@@ -163,20 +161,20 @@ def formatName(str):
 # Keep connection alive solution from https://gist.github.com/David-Lor/37e0ae02cd7fb1cd01085b2de553dde4
 def bot_polling():
     #global bot #Keep the bot object as global variable if needed
-    print("Starting bot polling now")
+    print(tlnCurrentTime.now(),"Starting bot polling now")
     while True:
         try:
-            print("New bot instance started")
+            print(tlnCurrentTime.now(),"New bot instance started")
             bot = telebot.TeleBot(TOKEN)
             botactions(bot)
             bot.polling(none_stop=True, interval=BOT_INTERVAL, timeout=BOT_TIMEOUT)
         except Exception as ex: #Error in polling
-            print("Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
+            print(tlnCurrentTime.now(),"Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
             bot.stop_polling()
             sleep(BOT_TIMEOUT)
         else: #Clean exit
             bot.stop_polling()
-            print("Bot polling loop finished")
+            print(tlnCurrentTime.now(),"Bot polling loop finished")
             break #End loop
 
 bot_polling()
