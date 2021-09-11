@@ -1,3 +1,4 @@
+# today failed
 import telebot
 from telebot import types
 import datetime
@@ -10,7 +11,6 @@ import pytz
 from pytz import timezone
 from time import sleep
 
-chatId = ""
 TOKEN = os.environ["TOKEN"] # Set a system env var with a token
 bot = telebot.TeleBot(TOKEN)
 
@@ -18,6 +18,11 @@ bot = telebot.TeleBot(TOKEN)
 serverDate = datetime.now()
 tlnTZ = timezone('Europe/Tallinn')
 tlnCurrentTime = serverDate.astimezone(tlnTZ)
+
+# Scheduled times
+# Timezones are not supported! Server time is used! (UTC)
+bdMessageTime="19:52"
+frogMessageTime="19:53"
 
 # Set a system env vars for userlist and birthday list
 # NAMES var value should be array format
@@ -34,18 +39,15 @@ BOT_TIMEOUT = 30
 def botactions(bot):
     # Main func to start the bot, read "/dude" key
     # Runs schedule for automatic Wednesday Frog pic sendout: scheduleWednesdayFrog
+    # Runs schedule for automatic Brithday message Frog pic sendout: scheduleWednesdayFrog
     # Runs schedule for keening connection alive: connectionPing
     @bot.message_handler(commands=["dude"])
     def starter(message):
         chatId = message.chat.id
         print(tlnCurrentTime.now(),chatId)
         bot.send_message(chatId, "Dude!")
-        scheduleWednesdayFrog(chatId)
-        connectionPing(message)
-        scheduleBirthdayMessage(chatId)
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
+
+        setSchedules(chatId, message)
 
     # Read "/wednesday" key, send a response with a Frog pic
     @bot.message_handler(commands=["wednesday"])
@@ -53,7 +55,7 @@ def botactions(bot):
         chatId = message.chat.id
         sendFrog(chatId)
 
-    # Read "dude_help"
+    # Read "/dude_help"
     @bot.message_handler(commands=["dude_help"])
     def open_coub(message):
         chatId = message.chat.id
@@ -68,17 +70,13 @@ def botactions(bot):
         messageId = message.message_id
         bot.delete_message(chatId, messageId)
 
-        scheduleWednesdayFrog(chatId)
-        connectionPing(message)
-        print(tlnCurrentTime, "I've restarted")
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
+        setSchedules(chatId, message)
 
+    # Send user's birthday list
     @bot.message_handler(commands=["bdlist"])
     def bdList(message):
         chatId = message.chat.id
-        list="Our birthdays:\n"
+        list="Our birthdays, my dude:\n"
         for i in range(len(BDAYS)):
             formatedName=formatName(NAMES[i])
             date=datetime.strptime(BDAYS[i], "%m-%d")
@@ -104,27 +102,29 @@ def isWednesday():
         return True
     return False
 
-# Schedule an automatic Wednesday Frog pic send
+# Schedule an automatic Wednesday Frog pic sending
+# Timezones are not supported! Uses server time! (UTC)
 def scheduleWednesdayFrog(chatId):
-    schedule.every().wednesday.at("10:00").do(sendFrog, chatId)
+    #schedule.every().wednesday.at(frogMessageTime).do(sendFrog, chatId)
+    schedule.every().saturday.at(frogMessageTime).do(sendFrog, chatId)
 
 # Choose a random pic from dir
 # Input: path to dir
 # Output: path to a ramdom pic in dir
 def getRangomPic(path):
     files = os.listdir(path)
-    d = random.choice(files)
+    randomPic = random.choice(files)
 
-    return path+"/"+d
+    return path+"/"+randomPic
 
-# Ping every 10 min to keep API connection alive
+# Schedule ping every 10 min to keep Heroku Dyno alive
 def connectionPing(msg):
     schedule.every(10).minutes.do(setChatId, msg)
 
-# Pointless function for Ping bot
+# Pointless function for Ping
 def setChatId(message):
     chatId = message.chat.id
-    print(tlnCurrentTime.now()," Ping (chatId Updated)")
+    print(tlnCurrentTime.now()," Ping (chatId Updated)", chatId)
 
 # Check if today is any user's from the list birthday
 # If yes returnes user's name from NAMES list
@@ -133,7 +133,6 @@ def isBirthday():
     today = tlnCurrentTime.date()
     todayNoYear = today.strftime('%m-%d')
     for i in range(len(BDAYS)):
-        print(BDAYS[i])
         if(str(todayNoYear) == BDAYS[i]):
             print (tlnCurrentTime.now(), "It's bday of ", NAMES[i])
             name = NAMES[i]
@@ -146,8 +145,10 @@ def sendBirthdayMessage(chatId):
         bot.send_message(chatId, "Сегодня день рождения " + isBirthday() + "!\nПоздравляю, кожаный человек!")
         bot.send_photo(chatId, photo=open("./dudes/bday/bday.jpg", "rb"))
 
+# Schedule an automatic Birthday message sending
+# Timezones are not supported! Uses server time!
 def scheduleBirthdayMessage(chatId):
-    schedule.every().day.at("20:10").do(sendBirthdayMessage, chatId)
+    schedule.every().day.at(bdMessageTime).do(sendBirthdayMessage, chatId)
 
 #Remove @ from usernames to not ping person in chat
 def formatName(str):
@@ -156,6 +157,16 @@ def formatName(str):
         return str
     else:
         return str
+
+def setSchedules(chatId, message):
+    chatTitle = bot.get_chat(chatId).title
+    scheduleWednesdayFrog(chatId)
+    connectionPing(message)
+    scheduleBirthdayMessage(chatId)
+    print(tlnCurrentTime.now(), "Schedule is set for", chatTitle, chatId)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 ###################################
 # Keep connection alive solution from https://gist.github.com/David-Lor/37e0ae02cd7fb1cd01085b2de553dde4
