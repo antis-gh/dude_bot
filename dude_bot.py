@@ -75,6 +75,7 @@ def botactions(bot):
     @bot.message_handler(commands=["bdlist"])
     def bdList(message):
         chatId = message.chat.id
+        print(tlnCurrentTime, BDAYS)
         list="Our birthdays, my dude:\n"
         for i in range(len(BDAYS)):
             formatedName=formatName(NAMES[i])
