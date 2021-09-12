@@ -20,8 +20,8 @@ tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime="08:10"
-frogMessageTime="09:00"
+bdMessageTime="16:10"
+frogMessageTime="16:00"
 
 # Set a system env vars for userlist and birthday list
 # NAMES var value should be array format
