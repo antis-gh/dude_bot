@@ -24,13 +24,18 @@ bdMessageTime="14:40"
 frogMessageTime="14:42"
 
 # Set a system env vars for userlist and birthday list
-# NAMES var value should be array format
+# NAMES_HEROKU var value should be array format
 # Example: ["Name1", "Name2", "Name3", "Name4"]
-NAMES = os.environ["NAMES"]
-# BDAYS var value should be array format, same lenght as NAMES arr, dates in %m-%d
-# BDAYS[0] = NAMES[0] user Birthday etc.
+NAMES_HEROKU = os.environ["NAMES"]
+# BDAYS_HEROKU var value should be array format, same lenght as NAMES arr, dates in %m-%d
+# BDAYS_HEROKU[0] = NAMES_HEROKU[0] user Birthday etc.
 # Example: ["11-03", "12-23", "09-10", "03-03"]
-BDAYS = os.environ["BDAYS"]
+BDAYS_HEROKU = os.environ["BDAYS"]
+#bdarr = ["02-12", "09-11", "06-03", "09-12", "08-20"]
+#namesarr = ["P", "K", "@antis0306", "S", "V"]
+
+NAMES = NAMES_HEROKU.split(",")
+BDAYS = BDAYS_HEROKU.split(",")
 
 BOT_INTERVAL = 3
 BOT_TIMEOUT = 30
@@ -75,7 +80,7 @@ def botactions(bot):
     @bot.message_handler(commands=["bdlist"])
     def bdList(message):
         chatId = message.chat.id
-        print(tlnCurrentTime, BDAYS)
+        print(tlnCurrentTime, BDAYS, NAMES)
         list="Our birthdays, my dude:\n"
         for i in range(len(BDAYS)):
             formatedName=formatName(NAMES[i])
