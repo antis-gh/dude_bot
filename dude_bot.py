@@ -20,26 +20,29 @@ tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime="14:40"
-frogMessageTime="14:42"
+bdMessageTime="18:05"
+frogMessageTime="18:00"
 
 # Set a system env vars for userlist and birthday list
-# NAMES_HEROKU var value should be array format
-# Example: ["Name1", "Name2", "Name3", "Name4"]
+# NAMES_HEROKU var value should be in string format (no spaces)
+# Example: Name1,Name2,Name3,Name4
 NAMES_HEROKU = os.environ["NAMES"]
-# BDAYS_HEROKU var value should be array format, same lenght as NAMES arr, dates in %m-%d
-# BDAYS_HEROKU[0] = NAMES_HEROKU[0] user Birthday etc.
-# Example: ["11-03", "12-23", "09-10", "03-03"]
+# BDAYS_HEROKU var value should be in string format (no spaces), same amount names as amount of names, dates in %m-%d
+# Example: 11-03,12-23,09-10,03-03
 BDAYS_HEROKU = os.environ["BDAYS"]
-#bdarr = ["02-12", "09-11", "06-03", "09-12", "08-20"]
-#namesarr = ["P", "K", "@antis0306", "S", "V"]
+# For local testing hardcoded values:
+#BDAYS_HEROKU = "02-12,09-11,06-03,09-12,08-20"
+#NAMES_HEROKU = "Name1,Name2,Name3,Name4,Name5"
 
+# As Heroku can't store arrays, convert NAMES_HEROKU and BDAYS_HEROKU strings to array:
 NAMES = NAMES_HEROKU.split(",")
 BDAYS = BDAYS_HEROKU.split(",")
 
+# Timers for polling restart
 BOT_INTERVAL = 3
 BOT_TIMEOUT = 30
 
+# Handler wrapper to restart polling on crash
 def botactions(bot):
     # Main func to start the bot, read "/dude" key
     # Runs schedule for automatic Wednesday Frog pic sendout: scheduleWednesdayFrog
@@ -48,7 +51,7 @@ def botactions(bot):
     @bot.message_handler(commands=["dude"])
     def starter(message):
         chatId = message.chat.id
-        print(tlnCurrentTime.now(),chatId)
+        print(tlnCurrentTime,chatId)
         bot.send_message(chatId, "Dude!")
 
         setSchedules(chatId, message)
@@ -80,7 +83,7 @@ def botactions(bot):
     @bot.message_handler(commands=["bdlist"])
     def bdList(message):
         chatId = message.chat.id
-        print(tlnCurrentTime, BDAYS, NAMES)
+        print(tlnCurrentTime, "Bdlist was called")
         list="Our birthdays, my dude:\n"
         for i in range(len(BDAYS)):
             formatedName=formatName(NAMES[i])
@@ -101,7 +104,7 @@ def sendFrog(chatId):
 # Output: True/False
 def isWednesday():
     day = tlnCurrentTime.isoweekday()
-    print (tlnCurrentTime.now(), "weekday:", day)
+    print (tlnCurrentTime, "weekday:", day)
 
     if (day==3):
         return True
@@ -129,7 +132,7 @@ def connectionPing(msg):
 # Pointless function for Ping
 def setChatId(message):
     chatId = message.chat.id
-    print(tlnCurrentTime.now()," Ping (chatId Updated)", chatId)
+    print(tlnCurrentTime," Ping (chatId Updated)", chatId)
 
 # Check if today is any user's from the list birthday
 # If yes returnes user's name from NAMES list
@@ -139,7 +142,7 @@ def isBirthday():
     todayNoYear = today.strftime('%m-%d')
     for i in range(len(BDAYS)):
         if(str(todayNoYear) == BDAYS[i]):
-            print (tlnCurrentTime.now(), "It's bday of ", NAMES[i])
+            print (tlnCurrentTime, "It's bday of ", NAMES[i])
             name = NAMES[i]
             return name
     return False
@@ -168,7 +171,7 @@ def setSchedules(chatId, message):
     scheduleWednesdayFrog(chatId)
     scheduleBirthdayMessage(chatId)
     connectionPing(message)
-    print(tlnCurrentTime.now(), "Schedule is set for", chatTitle, chatId)
+    print(tlnCurrentTime, "Schedule is set for", chatTitle, chatId)
     while True:
         schedule.run_pending()
         time.sleep(1)
@@ -177,20 +180,20 @@ def setSchedules(chatId, message):
 # Keep connection alive solution from https://gist.github.com/David-Lor/37e0ae02cd7fb1cd01085b2de553dde4
 def bot_polling():
     #global bot #Keep the bot object as global variable if needed
-    print(tlnCurrentTime.now(),"Starting bot polling now")
+    print(tlnCurrentTime,"Starting bot polling now")
     while True:
         try:
-            print(tlnCurrentTime.now(),"New bot instance started")
+            print(tlnCurrentTime,"New bot instance started")
             bot = telebot.TeleBot(TOKEN)
             botactions(bot)
             bot.polling(none_stop=True, interval=BOT_INTERVAL, timeout=BOT_TIMEOUT)
         except Exception as ex: #Error in polling
-            print(tlnCurrentTime.now(),"Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
+            print(tlnCurrentTime,"Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
             bot.stop_polling()
             sleep(BOT_TIMEOUT)
         else: #Clean exit
             bot.stop_polling()
-            print(tlnCurrentTime.now(),"Bot polling loop finished")
+            print(tlnCurrentTime,"Bot polling loop finished")
             break #End loop
 
 bot_polling()
