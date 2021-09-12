@@ -28,13 +28,13 @@ frogMessageTime = "07:00"
 # Set a system env vars for userlist and birthday list
 # NAMES_HEROKU var value should be in string format (no spaces)
 # Example: Name1,Name2,Name3,Name4
-#NAMES_HEROKU = os.environ["NAMES"]
+NAMES_HEROKU = os.environ["NAMES"]
 # BDAYS_HEROKU var value should be in string format (no spaces), same amount names as amount of names, dates in %m-%d
 # Example: 11-03,12-23,09-10,03-03
-#BDAYS_HEROKU = os.environ["BDAYS"]
+BDAYS_HEROKU = os.environ["BDAYS"]
 # For local testing hardcoded values:
-BDAYS_HEROKU = "02-12,09-11,06-03,09-13,08-20"
-NAMES_HEROKU = "Name1,Name2,Name3,Name4,Name5"
+# BDAYS_HEROKU = "02-12,09-11,06-03,09-13,08-20"
+# NAMES_HEROKU = "Name1,Name2,Name3,Name4,Name5"
 
 # As Heroku can't store arrays in env vars, workaround to convert NAMES_HEROKU and BDAYS_HEROKU strings to arrays:
 NAMES = NAMES_HEROKU.split(",")

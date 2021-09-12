@@ -15,7 +15,7 @@ def isBirthday(date, BDAYS, NAMES):
             return name
     return False
 
-# Send happy bitrhday message and pic
+# Send happy bitrhday message and pic to chat
 def sendBirthdayMessage(date, BDAYS, NAMES, bot, chatId):
     if (isBirthday(date, BDAYS, NAMES) != False):
         bot.send_message(chatId, "\U00002728 Сегодня день рождения " + isBirthday(date, BDAYS, NAMES) + "!\nПоздравляю, кожаный мешок!\U0001F942\n                                                Железяка")
