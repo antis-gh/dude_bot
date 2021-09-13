@@ -104,14 +104,16 @@ def schedulePing(msg):
 
 # Pointless function for Ping
 def sendPing(message):
+    timestamp=tlnTime()
     chatId = message.chat.id
-    print(tlnTime(),"Ping (chatId Updated)", chatId)
+    print(timestamp,"Ping (chatId Updated)", chatId)
 
 # Schedules caller function
 def setSchedules(chatId, message):
+    timestamp=tlnTime()
     chatTitle = bot.get_chat(chatId).title
-    wd.scheduleWednesdayFrog(tlnTime(), bot, chatId, frogMessageTime)
-    bd.scheduleBirthdayMessage(tlnTime(), BDAYS, NAMES, bot, chatId, bdMessageTime)
+    wd.scheduleWednesdayFrog(timestamp, bot, chatId, frogMessageTime)
+    bd.scheduleBirthdayMessage(timestamp, BDAYS, NAMES, bot, chatId, bdMessageTime)
     schedulePing(message)
     print(tlnTime(), "Schedule is set for", chatTitle, chatId)
     while True:
