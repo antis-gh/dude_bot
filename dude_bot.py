@@ -22,8 +22,8 @@ tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime = "17:15"
-frogMessageTime = "17:22"
+bdMessageTime = "18:45"
+frogMessageTime = "18:52"
 
 # Set a system env vars for userlist and birthday list
 # NAMES_HEROKU var value should be in string format (no spaces)
@@ -53,7 +53,7 @@ def botactions(bot):
     @bot.message_handler(commands=["dude"])
     def starter(message):
         chatId = message.chat.id
-        print(tlnCurrentTime,chatId)
+        print(tlnTime(),chatId)
         bot.send_message(chatId, "Dude!")
 
         setSchedules(chatId, message)
@@ -62,7 +62,7 @@ def botactions(bot):
     @bot.message_handler(commands=["wednesday"])
     def sendWednesdayFrog(message):
         chatId = message.chat.id
-        wd.sendFrog(tlnCurrentTime, bot, chatId)
+        wd.sendFrog(tlnTime(), bot, chatId)
 
     # Read "/dude_help" key
     @bot.message_handler(commands=["dude_help"])
@@ -86,7 +86,7 @@ def botactions(bot):
     @bot.message_handler(commands=["bdlist"])
     def bdList(message):
         chatId = message.chat.id
-        print(tlnCurrentTime, "Bdlist was called")
+        print(tlnTime(), "Bdlist was called")
         list="Our birthdays, my dude:\n"
         for i in range(len(BDAYS)):
             formatedName=bd.formatName(NAMES[i])
@@ -95,49 +95,49 @@ def botactions(bot):
             list += formatDate + " - " + formatedName+"\n"
         bot.send_message(chatId, list)
 
+def tlnTime():
+    return serverDate.astimezone(tlnTZ)
+
 # Schedule ping every 10 min to keep Heroku Dyno alive
-def connectionPing(msg):
-    schedule.every(10).minutes.do(setChatId, msg)
+def schedulePing(msg):
+    schedule.every(10).minutes.do(sendPing, msg)
 
 # Pointless function for Ping
-def setChatId(message):
+def sendPing(message):
     chatId = message.chat.id
-    print(updateTlnTime(tlnCurrentTime),"Ping (chatId Updated)", chatId)
+    print(tlnTime(),"Ping (chatId Updated)", chatId)
 
 # Schedules caller function
 def setSchedules(chatId, message):
-
     chatTitle = bot.get_chat(chatId).title
-    wd.scheduleWednesdayFrog(updateTlnTime(tlnCurrentTime), bot, chatId, frogMessageTime)
-    bd.scheduleBirthdayMessage(updateTlnTime(tlnCurrentTime), BDAYS, NAMES, bot, chatId, bdMessageTime)
-    connectionPing(message)
-    print(updateTlnTime(tlnCurrentTime), "Schedule is set for", chatTitle, chatId)
+    wd.scheduleWednesdayFrog(tlnTime(), bot, chatId, frogMessageTime)
+    bd.scheduleBirthdayMessage(tlnTime(), BDAYS, NAMES, bot, chatId, bdMessageTime)
+    schedulePing(message)
+    print(tlnTime(), "Schedule is set for", chatTitle, chatId)
     while True:
         schedule.run_pending()
         time.sleep(1)
 
-def updateTlnTime(time):
-    time=serverDate.astimezone(tlnTZ)
-    return time
+
 
 ###################################
 # Keep connection alive solution from https://gist.github.com/David-Lor/37e0ae02cd7fb1cd01085b2de553dde4
 def bot_polling():
-    print(tlnCurrentTime,"Starting bot polling now")
+    print(tlnTime(),"Starting bot polling now")
     while True:
         try:
-            print(tlnCurrentTime,"New bot instance started")
+            print(tlnTime(),"New bot instance started")
             bot = telebot.TeleBot(TOKEN)
             botactions(bot)
             #bot.send_message(chatId, "/dude_restart")
             bot.polling(none_stop=True, interval=BOT_INTERVAL, timeout=BOT_TIMEOUT)
         except Exception as ex: #Error in polling
-            print(tlnCurrentTime,"Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
+            print(tlnTime(),"Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
             bot.stop_polling()
             sleep(BOT_TIMEOUT)
         else: #Clean exit
             bot.stop_polling()
-            print(tlnCurrentTime,"Bot polling loop finished")
+            print(tlnTime(),"Bot polling loop finished")
             break #End loop
 
 bot_polling()
