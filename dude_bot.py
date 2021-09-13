@@ -111,9 +111,8 @@ def setSchedules(chatId, message):
     wd.scheduleWednesdayFrog(updateTlnTime(tlnCurrentTime), bot, chatId, frogMessageTime)
     bd.scheduleBirthdayMessage(updateTlnTime(tlnCurrentTime), BDAYS, NAMES, bot, chatId, bdMessageTime)
     connectionPing(message)
-    print(tlnCurrentTime, "Schedule is set for", chatTitle, chatId)
+    print(updateTlnTime(tlnCurrentTime), "Schedule is set for", chatTitle, chatId)
     while True:
-        tlnCurrentTime = serverDate.astimezone(tlnTZ)
         schedule.run_pending()
         time.sleep(1)
 
