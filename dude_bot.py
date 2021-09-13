@@ -79,6 +79,7 @@ def botactions(bot):
         messageId = message.message_id
         bot.delete_message(chatId, messageId)
         bot.send_message(chatId, "Сорян, я рестартанулся")
+        print("Restarted with /dude_resrtart")
         setSchedules(chatId, message)
 
     # Send user's birthday list
