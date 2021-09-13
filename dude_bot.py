@@ -22,8 +22,8 @@ tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime = "16:15"
-frogMessageTime = "16:22"
+bdMessageTime = "17:15"
+frogMessageTime = "17:22"
 
 # Set a system env vars for userlist and birthday list
 # NAMES_HEROKU var value should be in string format (no spaces)
@@ -102,7 +102,7 @@ def connectionPing(msg):
 # Pointless function for Ping
 def setChatId(message):
     chatId = message.chat.id
-    print(tlnCurrentTime,"Ping (chatId Updated)", chatId)
+    print(updateTlnTime(tlnCurrentTime),"Ping (chatId Updated)", chatId)
 
 # Schedules caller function
 def setSchedules(chatId, message):
@@ -129,6 +129,7 @@ def bot_polling():
             print(tlnCurrentTime,"New bot instance started")
             bot = telebot.TeleBot(TOKEN)
             botactions(bot)
+            bot.send_message(chatId, "/dude_restart")
             bot.polling(none_stop=True, interval=BOT_INTERVAL, timeout=BOT_TIMEOUT)
         except Exception as ex: #Error in polling
             print(tlnCurrentTime,"Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
