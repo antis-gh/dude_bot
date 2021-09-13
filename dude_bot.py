@@ -106,12 +106,14 @@ def setChatId(message):
 
 # Schedules caller function
 def setSchedules(chatId, message):
+
     chatTitle = bot.get_chat(chatId).title
     wd.scheduleWednesdayFrog(tlnCurrentTime, bot, chatId, frogMessageTime)
     bd.scheduleBirthdayMessage(tlnCurrentTime, BDAYS, NAMES, bot, chatId, bdMessageTime)
     connectionPing(message)
     print(tlnCurrentTime, "Schedule is set for", chatTitle, chatId)
     while True:
+        tlnCurrentTime = serverDate.astimezone(tlnTZ)
         schedule.run_pending()
         time.sleep(1)
 
