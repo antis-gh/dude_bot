@@ -22,8 +22,8 @@ tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime = "11:50"
-frogMessageTime = "11:52"
+bdMessageTime = "11:55"
+frogMessageTime = "11:57"
 
 # Set a system env vars for userlist and birthday list
 # NAMES_HEROKU var value should be in string format (no spaces)
@@ -118,7 +118,7 @@ def setSchedules(chatId, message):
 
 def updateTlnTime(time):
     time=serverDate.astimezone(tlnTZ)
-    return times
+    return time
 
 ###################################
 # Keep connection alive solution from https://gist.github.com/David-Lor/37e0ae02cd7fb1cd01085b2de553dde4
