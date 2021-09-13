@@ -22,8 +22,8 @@ tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime = "10:45"
-frogMessageTime = "10:47"
+bdMessageTime = "12:00"
+frogMessageTime = "12:01"
 
 # Set a system env vars for userlist and birthday list
 # NAMES_HEROKU var value should be in string format (no spaces)
@@ -113,7 +113,7 @@ def setSchedules(chatId, message):
     connectionPing(message)
     print(tlnCurrentTime, "Schedule is set for", chatTitle, chatId)
     while True:
-        tlnCurrentTime = serverDate.astimezone(tlnTZ)
+        global tlnCurrentTime = serverDate.astimezone(tlnTZ)
         schedule.run_pending()
         time.sleep(1)
 
