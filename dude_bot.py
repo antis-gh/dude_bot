@@ -18,7 +18,7 @@ bot = telebot.TeleBot(TOKEN)
 # Dates and timezones
 serverDate = datetime.now()
 tlnTZ = timezone('Europe/Tallinn')
-tlnCurrentTime = serverDate.astimezone(tlnTZ)
+#tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
@@ -113,7 +113,7 @@ def setSchedules(chatId, message):
     timestamp=tlnTime()
     chatTitle = bot.get_chat(chatId).title
     wd.scheduleWednesdayFrog(timestamp, bot, chatId, frogMessageTime)
-    bd.scheduleBirthdayMessage(timestamp, BDAYS, NAMES, bot, chatId, bdMessageTime)
+    bd.scheduleBirthdayMessage(BDAYS, NAMES, bot, chatId, bdMessageTime)
     schedulePing(message)
     print(tlnTime(), "Schedule is set for", chatTitle, chatId)
     while True:
