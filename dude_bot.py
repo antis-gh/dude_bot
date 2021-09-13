@@ -18,7 +18,7 @@ bot = telebot.TeleBot(TOKEN)
 # Dates and timezones
 serverDate = datetime.now()
 tlnTZ = timezone('Europe/Tallinn')
-tlnCurrentTime = serverDate.astimezone(tlnTZ)
+global tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
@@ -113,7 +113,7 @@ def setSchedules(chatId, message):
     connectionPing(message)
     print(tlnCurrentTime, "Schedule is set for", chatTitle, chatId)
     while True:
-        global tlnCurrentTime = serverDate.astimezone(tlnTZ)
+        tlnCurrentTime = serverDate.astimezone(tlnTZ)
         schedule.run_pending()
         time.sleep(1)
 
