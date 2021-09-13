@@ -16,14 +16,14 @@ TOKEN = os.environ["TOKEN"] # Set a system env var with a token
 bot = telebot.TeleBot(TOKEN)
 
 # Dates and timezones
-serverDate = datetime.now()
-tlnTZ = timezone('Europe/Tallinn')
+global serverDate = datetime.now()
+global tlnTZ = timezone('Europe/Tallinn')
 global tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime = "11:03"
-frogMessageTime = "11:04"
+bdMessageTime = "11:10"
+frogMessageTime = "11:11"
 
 # Set a system env vars for userlist and birthday list
 # NAMES_HEROKU var value should be in string format (no spaces)
