@@ -1,6 +1,7 @@
 from datetime import datetime
 import time
 import schedule
+from pytz import timezone
 
 serverDate = datetime.now()
 tlnTZ = timezone('Europe/Tallinn')

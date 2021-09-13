@@ -22,7 +22,7 @@ tlnTZ = timezone('Europe/Tallinn')
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime = "21:15"
+bdMessageTime = "21:18"
 frogMessageTime = "19:03"
 
 # Set a system env vars for userlist and birthday list
