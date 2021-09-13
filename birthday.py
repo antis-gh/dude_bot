@@ -11,12 +11,15 @@ tlnTZ = timezone('Europe/Tallinn')
 # If no returnes False
 def isBirthday(BDAYS, NAMES):
     today = tlnTime()
+    print("today:", today)
     todayNoYear = today.strftime('%m-%d')
+    print("todayNoYear:", todayNoYear)
     for i in range(len(BDAYS)):
         if(str(todayNoYear) == BDAYS[i]):
-            print (date, "It's bday of ", NAMES[i])
+            print (today, "It's bday of ", NAMES[i])
             name = NAMES[i]
             return name
+    print("No bdays today")
     return False
 
 # Send happy bitrhday message and pic to chat

@@ -12,18 +12,18 @@ from time import sleep
 import wednesday as wd
 import birthday as bd
 
-TOKEN = os.environ["TOKEN"] # Set a system env var with a token
+# Set a system env var with a token
+TOKEN = os.environ["TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 
 # Dates and timezones
 serverDate = datetime.now()
 tlnTZ = timezone('Europe/Tallinn')
-#tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime = "21:18"
-frogMessageTime = "19:03"
+bdMessageTime = "07:07"
+frogMessageTime = "07:00"
 
 # Set a system env vars for userlist and birthday list
 # NAMES_HEROKU var value should be in string format (no spaces)
@@ -33,8 +33,8 @@ NAMES_HEROKU = os.environ["NAMES"]
 # Example: 11-03,12-23,09-10,03-03
 BDAYS_HEROKU = os.environ["BDAYS"]
 # For local testing hardcoded values:
-# BDAYS_HEROKU = "02-12,09-11,06-03,09-13,08-20"
-# NAMES_HEROKU = "Name1,Name2,Name3,Name4,Name5"
+#BDAYS_HEROKU = "02-12,09-11,06-03,09-14,08-20"
+#NAMES_HEROKU = "Name1,Name2,Name3,Name4,Name5"
 
 # As Heroku can't store arrays in env vars, workaround to convert NAMES_HEROKU and BDAYS_HEROKU strings to arrays:
 NAMES = NAMES_HEROKU.split(",")
@@ -112,34 +112,33 @@ def sendPing(message):
 def setSchedules(chatId, message):
     timestamp=tlnTime()
     chatTitle = bot.get_chat(chatId).title
-    wd.scheduleWednesdayFrog(timestamp, bot, chatId, frogMessageTime)
+    wd.scheduleWednesdayFrog(bot, chatId, frogMessageTime)
     bd.scheduleBirthdayMessage(BDAYS, NAMES, bot, chatId, bdMessageTime)
     schedulePing(message)
-    print(tlnTime(), "Schedule is set for", chatTitle, chatId)
+    print(timestamp, "Schedule is set for", chatTitle, chatId)
     while True:
         schedule.run_pending()
         time.sleep(1)
 
-
-
 ###################################
 # Keep connection alive solution from https://gist.github.com/David-Lor/37e0ae02cd7fb1cd01085b2de553dde4
 def bot_polling():
-    print(tlnTime(),"Starting bot polling now")
+    timestamp=tlnTime()
+    print(timestamp,"Starting bot polling now")
     while True:
         try:
-            print(tlnTime(),"New bot instance started")
+            print(timestamp,"New bot instance started")
             bot = telebot.TeleBot(TOKEN)
             botactions(bot)
             #bot.send_message(chatId, "/dude_restart")
             bot.polling(none_stop=True, interval=BOT_INTERVAL, timeout=BOT_TIMEOUT)
         except Exception as ex: #Error in polling
-            print(tlnTime(),"Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
+            print(timestamp,"Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
             bot.stop_polling()
             sleep(BOT_TIMEOUT)
         else: #Clean exit
             bot.stop_polling()
-            print(tlnTime(),"Bot polling loop finished")
+            print(timestamp,"Bot polling loop finished")
             break #End loop
 
 bot_polling()
