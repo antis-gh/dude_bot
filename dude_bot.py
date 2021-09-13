@@ -129,7 +129,7 @@ def bot_polling():
             print(tlnCurrentTime,"New bot instance started")
             bot = telebot.TeleBot(TOKEN)
             botactions(bot)
-            bot.send_message(chatId, "/dude_restart")
+            #bot.send_message(chatId, "/dude_restart")
             bot.polling(none_stop=True, interval=BOT_INTERVAL, timeout=BOT_TIMEOUT)
         except Exception as ex: #Error in polling
             print(tlnCurrentTime,"Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
