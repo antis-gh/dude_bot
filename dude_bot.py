@@ -16,14 +16,14 @@ TOKEN = os.environ["TOKEN"] # Set a system env var with a token
 bot = telebot.TeleBot(TOKEN)
 
 # Dates and timezones
-global serverDate = datetime.now()
-global tlnTZ = timezone('Europe/Tallinn')
-global tlnCurrentTime = serverDate.astimezone(tlnTZ)
+serverDate = datetime.now()
+tlnTZ = timezone('Europe/Tallinn')
+tlnCurrentTime = serverDate.astimezone(tlnTZ)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime = "11:10"
-frogMessageTime = "11:11"
+bdMessageTime = "11:50"
+frogMessageTime = "11:52"
 
 # Set a system env vars for userlist and birthday list
 # NAMES_HEROKU var value should be in string format (no spaces)
@@ -108,14 +108,18 @@ def setChatId(message):
 def setSchedules(chatId, message):
 
     chatTitle = bot.get_chat(chatId).title
-    wd.scheduleWednesdayFrog(tlnCurrentTime, bot, chatId, frogMessageTime)
-    bd.scheduleBirthdayMessage(tlnCurrentTime, BDAYS, NAMES, bot, chatId, bdMessageTime)
+    wd.scheduleWednesdayFrog(updateTlnTime(tlnCurrentTime), bot, chatId, frogMessageTime)
+    bd.scheduleBirthdayMessage(updateTlnTime(tlnCurrentTime), BDAYS, NAMES, bot, chatId, bdMessageTime)
     connectionPing(message)
     print(tlnCurrentTime, "Schedule is set for", chatTitle, chatId)
     while True:
         tlnCurrentTime = serverDate.astimezone(tlnTZ)
         schedule.run_pending()
         time.sleep(1)
+
+def updateTlnTime(time):
+    time=serverDate.astimezone(tlnTZ)
+    return times
 
 ###################################
 # Keep connection alive solution from https://gist.github.com/David-Lor/37e0ae02cd7fb1cd01085b2de553dde4
