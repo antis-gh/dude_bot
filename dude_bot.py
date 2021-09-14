@@ -11,6 +11,7 @@ from time import sleep
 import wednesday as wd
 import birthday as bd
 import polls
+import holidays as hd
 
 # Set a system env var with a token
 TOKEN = os.environ["TOKEN"]
@@ -18,8 +19,9 @@ bot = telebot.TeleBot(TOKEN)
 
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime = "14:00"
-frogMessageTime = "14:03"
+bdMessageTime = "07:00" # default: "07:00"
+frogMessageTime = "07:07" # default: "07:07"
+holidayMessageTime = "09:00" # default: "09:00"
 
 # Set a system env vars for userlist and birthday list
 # NAMES_HEROKU var value should be in string format (no spaces)
@@ -29,8 +31,8 @@ NAMES_HEROKU = os.environ["NAMES"]
 # Example: 11-03,12-23,09-10,03-03
 BDAYS_HEROKU = os.environ["BDAYS"]
 # For local testing hardcoded values:
-#BDAYS_HEROKU = "02-12,09-11,06-03,09-14,08-20"
-#NAMES_HEROKU = "Name1,Name2,Name3,Name4,Name5"
+# BDAYS_HEROKU = "02-12,09-11,06-03,09-14,08-20"
+# NAMES_HEROKU = "Name1,Name2,Name3,Name4,Name5"
 
 # As Heroku can't store arrays in env vars, workaround to convert NAMES_HEROKU and BDAYS_HEROKU strings to arrays:
 NAMES = NAMES_HEROKU.split(",")
@@ -65,7 +67,7 @@ def botactions(bot):
     def open_coub(message):
         chatId = message.chat.id
         bot.send_message(chatId, "Here's what I can do, dude:")
-        bot.send_message(chatId, "/wednesday - Send a frog if it's Wednesday;\n/bdlist - List of dude's birthdays;\n/drink - Poll, when will we drink?;\nAlso:\n- Sending a Frog picture every Wednesday at 10AM;\n- Sending a b-day messages at 10-10AM")
+        bot.send_message(chatId, "/wednesday - Send a frog if it's Wednesday;\n/bdlist - List of dude's birthdays;\n/drink - Poll, when will we drink?;\nAnd some hidden features =)")
 
     # Start/Rrestart schedule and delete a call message
     # Bot should have chat admin rights to use the delete function
@@ -84,16 +86,15 @@ def botactions(bot):
         chatId = message.chat.id
         bd.printBdays(BDAYS, NAMES, bot, chatId)
 
-
     @bot.message_handler(commands=["drink"])
     def bdList(message):
         chatId = message.chat.id
         polls.createPoll(bot, chatId)
 
-# def tlnTime():
-#     serverDate = datetime.now()
-#     tlnTZ = timezone('Europe/Tallinn')
-#     return serverDate.astimezone(tlnTZ)
+    @bot.message_handler(commands=["holiday"])
+    def checkHoliday(message):
+        chatId = message.chat.id
+        hd.checkHolidayFromFile(bot, chatId)
 
 # Schedule ping every 10 min to keep Heroku Dyno alive
 def schedulePing(msg):
@@ -110,9 +111,10 @@ def setSchedules(chatId, message):
     timestamp=wd.tlnTime()
     chatTitle = bot.get_chat(chatId).title
     wd.scheduleWednesdayFrog(bot, chatId, frogMessageTime)
-    #wd2.scheduleWednesdayFrog(bot, chatId, 12, 49)
     bd.scheduleBirthdayMessage(BDAYS, NAMES, bot, chatId, bdMessageTime)
+    hd.scheduleHolidayMessage(bot, chatId, holidayMessageTime)
     schedulePing(message)
+
     print(timestamp, "Schedule is set for", chatTitle, chatId)
     while True:
         schedule.run_pending()

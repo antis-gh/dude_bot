@@ -1,0 +1,36 @@
+{
+	"holidays": [
+		{
+			"holiday": "День программиста",
+			"exact_date": null,
+			"exact_year_day": 256,
+			"specific_date": null,
+			"text": "Не забудьте поздравить своих знакомых!",
+			"picture": "programmer.jpg"
+		},
+				{
+			"holiday": "День тестировщика",
+			"exact_date": "09-09",
+			"exact_year_day": null,
+			"specific_date": null,
+			"text": "Поздравляю вас и желаю побольше интересных проектов, внятных тз и приятных коллег!",
+			"picture": "qa.jpg"
+		},
+		{
+			"holiday": "День сисадмина",
+			"exact_date": null,
+			"exact_year_day": null,
+			"specific_date": "last friday of July",
+			"text": "Не забудьте поздравить своих знакомых!",
+			"picture": "sisadmin.jpg"
+		},
+		{
+			"holiday": "День друзей",
+			"exact_date": "02-14",
+			"exact_year_day": null,
+			"specific_date": null,
+			"text": "(Да, да, в Эстонии он называется именно так) С праздником!",
+			"picture": "valentines.png"
+		}
+	]
+}

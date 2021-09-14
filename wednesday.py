@@ -28,7 +28,6 @@ def sendFrog(bot, chatId):
 # Timezones are not supported! Uses server time! (UTC)
 def scheduleWednesdayFrog(bot, chatId, time):
     date = tlnTime()
-    #schedule.every().wednesday.at(time).do(sendFrog, date, bot, chatId)
     schedule.every().tuesday.at(time).do(sendFrog,  bot, chatId)
     print(date, "scheduleWednesdayFrog is set to", time, "(server time)")
 
@@ -41,6 +40,7 @@ def getRangomPic(path):
 
     return path+"/"+randomPic
 
+# Get current Tallinn time
 def tlnTime():
     serverDate = datetime.now()
     tlnTZ = timezone('Europe/Tallinn')
