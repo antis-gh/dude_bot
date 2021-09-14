@@ -2,18 +2,15 @@ from datetime import datetime
 import time
 import schedule
 from pytz import timezone
+import wednesday as wd
 
-serverDate = datetime.now()
-tlnTZ = timezone('Europe/Tallinn')
 
 # Check if today is any user's from the list birthday
 # If yes returnes user's name from NAMES list
 # If no returnes False
 def isBirthday(BDAYS, NAMES):
-    today = tlnTime()
-    print("today:", today)
+    today = wd.tlnTime()
     todayNoYear = today.strftime('%m-%d')
-    print("todayNoYear:", todayNoYear)
     for i in range(len(BDAYS)):
         if(str(todayNoYear) == BDAYS[i]):
             print (today, "It's bday of ", NAMES[i])
@@ -31,9 +28,19 @@ def sendBirthdayMessage(BDAYS, NAMES, bot, chatId):
 # Schedule an automatic Birthday message sending
 # Timezones are not supported! Uses server time!
 def scheduleBirthdayMessage(BDAYS, NAMES, bot, chatId, time):
-    date = tlnTime()
+    date = wd.tlnTime()
     schedule.every().day.at(time).do(sendBirthdayMessage, BDAYS, NAMES, bot, chatId)
     print(date, "scheduleBirthdayMessage is set to", time, "(server time)")
+
+def printBdays(BDAYS, NAMES, bot, chatId):
+    list="Our birthdays, my dude:\n"
+    for i in range(len(BDAYS)):
+        formatedName=formatName(NAMES[i])
+        date=datetime.strptime(BDAYS[i], "%m-%d")
+        formatDate=date.strftime("%b-%d")
+        list += formatDate + " - " + formatedName+"\n"
+    bot.send_message(chatId, list)
+    print(wd.tlnTime(), "Bdlist was printed")
 
 #Remove @ from usernames to not ping person in chat
 def formatName(str):
@@ -42,6 +49,3 @@ def formatName(str):
         return str
     else:
         return str
-
-def tlnTime():
-    return serverDate.astimezone(tlnTZ)

@@ -5,9 +5,6 @@ import random
 import schedule
 from pytz import timezone
 
-serverDate = datetime.now()
-tlnTZ = timezone('Europe/Tallinn')
-
 # Check if it's Wednesday today (according to passed timezone date)
 # Output: True/False
 def isWednesday():
@@ -45,4 +42,6 @@ def getRangomPic(path):
     return path+"/"+randomPic
 
 def tlnTime():
+    serverDate = datetime.now()
+    tlnTZ = timezone('Europe/Tallinn')
     return serverDate.astimezone(tlnTZ)

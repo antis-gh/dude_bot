@@ -1,6 +1,5 @@
 import telebot
 from telebot import types
-import datetime
 from datetime import datetime
 import time
 import os
@@ -11,19 +10,16 @@ from pytz import timezone
 from time import sleep
 import wednesday as wd
 import birthday as bd
+import polls
 
 # Set a system env var with a token
 TOKEN = os.environ["TOKEN"]
 bot = telebot.TeleBot(TOKEN)
 
-# Dates and timezones
-serverDate = datetime.now()
-tlnTZ = timezone('Europe/Tallinn')
-
 # Scheduled times
 # Timezones are not supported! Server time is used! (UTC)
-bdMessageTime = "07:07"
-frogMessageTime = "07:00"
+bdMessageTime = "14:00"
+frogMessageTime = "14:03"
 
 # Set a system env vars for userlist and birthday list
 # NAMES_HEROKU var value should be in string format (no spaces)
@@ -53,7 +49,7 @@ def botactions(bot):
     @bot.message_handler(commands=["dude"])
     def starter(message):
         chatId = message.chat.id
-        print(tlnTime(),chatId)
+        print(wd.tlnTime(),chatId)
         bot.send_message(chatId, "Dude!")
 
         setSchedules(chatId, message)
@@ -62,17 +58,17 @@ def botactions(bot):
     @bot.message_handler(commands=["wednesday"])
     def sendWednesdayFrog(message):
         chatId = message.chat.id
-        wd.sendFrog(tlnTime(), bot, chatId)
+        wd.sendFrog(bot, chatId)
 
     # Read "/dude_help" key
     @bot.message_handler(commands=["dude_help"])
     def open_coub(message):
         chatId = message.chat.id
         bot.send_message(chatId, "Here's what I can do, dude:")
-        bot.send_message(chatId, "/wednesday - Send a frog if it's Wednesday;\n/bdlist - List of dude's birthdays;\nAlso:\n- Sending a Frog picture every Wednesday at 10AM;\n- Sending a b-day messages at 10-10AM")
+        bot.send_message(chatId, "/wednesday - Send a frog if it's Wednesday;\n/bdlist - List of dude's birthdays;\n/drink - Poll, when will we drink?;\nAlso:\n- Sending a Frog picture every Wednesday at 10AM;\n- Sending a b-day messages at 10-10AM")
 
-    # Start or Rrestart bot and delete a call message
-    # Bot should have chat admin rights to use the delete functin
+    # Start/Rrestart schedule and delete a call message
+    # Bot should have chat admin rights to use the delete function
     @bot.message_handler(commands=["dude_restart"])
     def deleteMsgAndRestart(message):
         chatId = message.chat.id
@@ -86,17 +82,18 @@ def botactions(bot):
     @bot.message_handler(commands=["bdlist"])
     def bdList(message):
         chatId = message.chat.id
-        print(tlnTime(), "Bdlist was called")
-        list="Our birthdays, my dude:\n"
-        for i in range(len(BDAYS)):
-            formatedName=bd.formatName(NAMES[i])
-            date=datetime.strptime(BDAYS[i], "%m-%d")
-            formatDate=date.strftime("%b-%d")
-            list += formatDate + " - " + formatedName+"\n"
-        bot.send_message(chatId, list)
+        bd.printBdays(BDAYS, NAMES, bot, chatId)
 
-def tlnTime():
-    return serverDate.astimezone(tlnTZ)
+
+    @bot.message_handler(commands=["drink"])
+    def bdList(message):
+        chatId = message.chat.id
+        polls.createPoll(bot, chatId)
+
+# def tlnTime():
+#     serverDate = datetime.now()
+#     tlnTZ = timezone('Europe/Tallinn')
+#     return serverDate.astimezone(tlnTZ)
 
 # Schedule ping every 10 min to keep Heroku Dyno alive
 def schedulePing(msg):
@@ -104,15 +101,16 @@ def schedulePing(msg):
 
 # Pointless function for Ping
 def sendPing(message):
-    timestamp=tlnTime()
+    timestamp = wd.tlnTime()
     chatId = message.chat.id
     print(timestamp,"Ping (chatId Updated)", chatId)
 
 # Schedules caller function
 def setSchedules(chatId, message):
-    timestamp=tlnTime()
+    timestamp=wd.tlnTime()
     chatTitle = bot.get_chat(chatId).title
     wd.scheduleWednesdayFrog(bot, chatId, frogMessageTime)
+    #wd2.scheduleWednesdayFrog(bot, chatId, 12, 49)
     bd.scheduleBirthdayMessage(BDAYS, NAMES, bot, chatId, bdMessageTime)
     schedulePing(message)
     print(timestamp, "Schedule is set for", chatTitle, chatId)
@@ -123,17 +121,16 @@ def setSchedules(chatId, message):
 ###################################
 # Keep connection alive solution from https://gist.github.com/David-Lor/37e0ae02cd7fb1cd01085b2de553dde4
 def bot_polling():
-    timestamp=tlnTime()
-    print(timestamp,"Starting bot polling now")
+    print(wd.tlnTime(),"Starting bot polling now")
     while True:
         try:
-            print(timestamp,"New bot instance started")
+            print(wd.tlnTime(),"New bot instance started")
             bot = telebot.TeleBot(TOKEN)
             botactions(bot)
             #bot.send_message(chatId, "/dude_restart")
             bot.polling(none_stop=True, interval=BOT_INTERVAL, timeout=BOT_TIMEOUT)
         except Exception as ex: #Error in polling
-            print(timestamp,"Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
+            print(wd.tlnTime(),"Bot polling failed, restarting in {}sec. Error:\n{}".format(BOT_TIMEOUT, ex))
             bot.stop_polling()
             sleep(BOT_TIMEOUT)
         else: #Clean exit
